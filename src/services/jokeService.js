@@ -11,3 +11,19 @@ export const AddJoke = async(input)=>{
     // Send the transient state to your API
     const response = await fetch("http://localhost:8088/jokes", postOptions)
 }
+
+export const getAllJokes = () => {
+    return fetch (`http://localhost:8088/jokes`).then((res) => res.json())
+}
+
+export const EditJoke =  async(joke) => {
+    const putOptions = {
+        method: "PUT", 
+        headers: { // make the key a string bc the key name has a dash in it so surround with quotes
+            "Content-Type": "application/json"
+        },
+         body: JSON.stringify(joke)
+        }
+    // Send the transient state to your API
+    return fetch(`http://localhost:8088/jokes/${joke.id}`, putOptions).then((res) => res.json())
+}
