@@ -1,6 +1,6 @@
 import "./App.css"
 import { useEffect, useState } from "react"
-import { AddJoke, EditJoke, TellJoke, getAllJokes } from "./services/jokeService.js"
+import { AddJoke, DeleteJoke, EditJoke, getAllJokes } from "./services/jokeService.js"
 import stevePic from "./assets/steve.png"
 
 export const App = () => {
@@ -8,19 +8,23 @@ export const App = () => {
   const [allJokes, setAllJokes] = useState([])
   const [showToldJokes, setToldJokes] = useState([])
   const [showUntoldJokes, setUntoldJokes] = useState([])
+  const [change, setChange] = useState(false)
 
-
-  const fetchJokes = () => {
-    getAllJokes().then((jokeArr) => {
-      setAllJokes(jokeArr)
+  const fetchJokes = async() => {
+    await getAllJokes().then((jokeArray) => {
+    setAllJokes(jokeArray)
   })
   }
+
+useEffect (() => {
+
+})
 
   useEffect(() => { //the function is what we want to happen and the array is when we want it to happen
      getAllJokes().then((jokeArray) => {
       setAllJokes(jokeArray)
     })
-  }, [showToldJokes,showUntoldJokes]) //ONLY runs on initial render of component (so we dont have an inifinite loop) when empty
+  }, []) //ONLY runs on initial render of component (so we dont have an inifinite loop) when empty
 
   useEffect(() => {
     const untoldJokes = allJokes.filter(
@@ -36,6 +40,7 @@ export const App = () => {
     }, [allJokes]) 
 
 
+
 const handleAddButton = () => {
   AddJoke(joke)
   setJoke("")
@@ -44,8 +49,12 @@ const handleAddButton = () => {
 
 const handleEditButton = (joke) => {
   const editedJoke = {id:joke.id,text:joke.text,told:!joke.told }
-  console.log(editedJoke)
   EditJoke(editedJoke)
+  fetchJokes()
+}
+
+const handleDeleteButton = (joke) => {
+  DeleteJoke(joke)
   fetchJokes()
 }
 
@@ -68,6 +77,7 @@ const handleEditButton = (joke) => {
 <button className="joke-input-submit" 
       onClick={() => {
         handleAddButton()
+        fetchJokes()
         }}>Add
         </button>
   </div>
@@ -84,8 +94,15 @@ const handleEditButton = (joke) => {
             {joke.text}
             <button onClick={() => { 
               handleEditButton(joke)
+              fetchJokes()
             }}>
               Tell Joke
+            </button>
+            <button onClick={() => { 
+              handleDeleteButton(joke)
+              fetchJokes()
+            }}>
+              Delete
             </button></ul>
         )
       })}
@@ -100,8 +117,15 @@ const handleEditButton = (joke) => {
           <ul className="joke-list-item" key={joke.id}>{joke.text}
           <button onClick={() => { 
               handleEditButton(joke)
+              fetchJokes()
             }}>
               Reuse Joke
+            </button>
+            <button onClick={() => { 
+              handleDeleteButton(joke)
+              fetchJokes()
+            }}>
+              Delete
             </button></ul>
         )
       })}
